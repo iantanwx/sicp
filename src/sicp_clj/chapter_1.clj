@@ -133,3 +133,25 @@
 ; => 2 ^ 16
 ; => 65536
 (math/expt 2 (math/expt 2 4))
+
+; Exercise 1.11
+(defn f-rec [n]
+  (if (< n 3)
+    n
+    (+ (f-rec (- n 1)) (* 2 (f-rec (- n 2))) (* 3 (f-rec (- n 3))))))
+(f-rec 5)
+(f-rec 4)
+(f-rec 3)
+(f-rec 2)
+
+(defn f-iter-helper [a b c n]
+  (if (= n 3)
+    (+ a (* b 2) (* c 3))
+    (f-iter-helper (+ a (* b 2) (* c 3)) a b (- n 1))))
+
+(defn f-iter [n]
+  (if (< n 3)
+    n
+    (f-iter-helper 2 1 0 n)))
+
+(f-iter 5)
