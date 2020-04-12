@@ -1,4 +1,4 @@
-(ns sicp_clj.chapter-1
+(ns sicp-clj.chapter-1
   (:require [clojure.math.numeric-tower :as math]))
 
 (defn square
@@ -69,3 +69,20 @@
 (better-sqrt 0.001)
 (better-sqrt 9)
 (better-sqrt 100000)
+
+; Exercise 1.8
+(defn guess-cube-root
+  [x guess]
+  (/ (+ (/ x (square guess)) (* 2 guess)) 3))
+
+(defn cubert-iter
+  [guess prev-guess x]
+  (if (<= (math/abs (- guess prev-guess)) 0.00000001)
+    guess
+    (cubert-iter (guess-cube-root x guess) guess x)))
+
+(defn cube-root
+  [x]
+  (cubert-iter 1.0, 0.0 x))
+
+(cube-root 8)
