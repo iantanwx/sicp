@@ -155,3 +155,12 @@
     (f-iter-helper 2 1 0 n)))
 
 (f-iter 5)
+
+; Exercise 1.12
+(defn pascals-triangle [n k]
+  ; base case: left or right-most column
+  (if (or (= k 0) (= n k) (= n 0))
+    1
+    (+ (pascals-triangle (- n 1) (- k 1)) (pascals-triangle (- n 1) (+ k)))))
+
+(pascals-triangle 3 1)
