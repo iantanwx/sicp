@@ -164,3 +164,4 @@
     (+ (pascals-triangle (- n 1) (- k 1)) (pascals-triangle (- n 1) (+ k)))))
 
 (pascals-triangle 3 1)
+(/ 0.45 3.0)
