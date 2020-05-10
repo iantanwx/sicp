@@ -6,5 +6,5 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println (square 5)))
+  (println "Hello world!"))
 
