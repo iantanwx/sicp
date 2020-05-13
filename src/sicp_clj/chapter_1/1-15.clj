@@ -1,4 +1,4 @@
-(ns sicp-clj.chapter-1
+(ns sicp-clj.chapter-1.1-15
   (:require [clojure.math.numeric-tower :as math]))
 
 (defn square
