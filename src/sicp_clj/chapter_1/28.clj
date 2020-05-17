@@ -1,7 +1,7 @@
 (ns sicp-clj.chapter-1.28
   (:require [sicp-clj.chapter-1.24 :as ch24]))
 
-(defn trivial-square?
+(defn non-trivial-square?
   "True if x is the non-trivial square root of a number equal to 1 modulo n"
   [x n]
   (cond
@@ -15,7 +15,7 @@
   (cond
     (= exp 0) 1
     (even? exp) (let [x (expmod base (/ exp 2) m)]
-                  (if (trivial-square? x m) 0 (rem (ch24/square x) m)))
+                  (if (non-trivial-square? x m) 0 (rem (ch24/square x) m)))
     :else (rem (* base (expmod base (- exp 1) m)) m)))
 
 (defn miller-rabin
