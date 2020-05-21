@@ -2,7 +2,7 @@
 
 (defn cont-frac
   [d n k]
-  (loop [i (- k 1) denom (+ (d (- k 1)) (/ (n k) (d k)))]
+  (loop [i (dec k) denom (+ (d (dec k)) (/ (n k) (d k)))]
     (if (= i 1) (/ (n 1) denom)
         (recur (dec i) (+ (d (- i 1)) (/ (n i) denom))))))
 
