@@ -7,11 +7,14 @@
 (defn smooth
   "Transform f into a smoothed function"
   [f]
-  #(/ (+ (f (- %1 dx)) (f %1) (f (+ %1 dx))) 3))
+  #(/ (+ (f (- %1 dx))
+         (f %1)
+         (f (+ %1 dx)))
+      3))
 
 (defn smooth-n
   "Smooths a given function f n times"
   [f n]
   ((ch43/repeated smooth n) f))
 
-((smooth-n ch24/square 5) 5)
+((smooth-n ch24/square 5) 4)

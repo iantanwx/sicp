@@ -37,7 +37,7 @@
 (defn average-damp
   "Average dampens a function"
   [f]
-  #(/ (+ %1 (f %1) 2)))
+  #(/ (+ %1 (f %1)) 2))
 
 (defn sqrt-fixed-point
   "Approximates the square root of x"
