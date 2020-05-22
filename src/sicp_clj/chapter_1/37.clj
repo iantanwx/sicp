@@ -20,7 +20,7 @@
 (cont-frac (fn [_] 1.0) (fn [_] 1.0) 9)
 (cont-frac-rec (fn [_] 1.0) (fn [_] 1.0) 9)
 ; => 0.6179775280898876
-(cont-frac (fn [_] 1.0) (fn [_] 1.0) 11)
-(cont-frac-rec (fn [_] 1.0) (fn [_] 1.0) 11)
+(cont-frac (fn [_] 1.0) (fn [_] 1.0) 10)
+(cont-frac-rec (fn [_] 1.0) (fn [_] 1.0) 10)
 ; => 0.6180555555555556
 
