@@ -8,8 +8,9 @@
   "Approximates the nth root of x"
   [x n]
   (ex35/fixed-point
-    ((ex43/repeated ex40/average-damp 2) #(/ x (math/expt %1 (- n 1))))
-    1.0))
+   ((ex43/repeated ex40/average-damp 2)
+    #(/ x (math/expt %1 (- n 1))))
+   1.0))
 
 (nth-root 8 3)
 (nth-root 32 5)
