@@ -32,8 +32,8 @@
   "Divides two intervals"
   [x y]
   (mul-interval x
-                (make-interval (/ 1.0 (lower-bound y))
-                               (/ 1.0 (upper-bound y)))))
+                (make-interval (/ 1.0 (upper-bound y))
+                               (/ 1.0 (lower-bound y)))))
 
 (def fst (make-interval 1.5 3.0))
 (def snd (make-interval 3.5 5.0))
