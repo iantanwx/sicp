@@ -15,6 +15,7 @@
 
 (def a (make-center-percent 100 1))
 (def b (make-center-percent 100 2))
+(def one (make-interval 1 1))
 
 (par1 a b)
 ; [47.793103448275865 52.294416243654815]
@@ -23,6 +24,7 @@
 
 (div-interval a a)
 ; [0.9801980198019802 1.0202020202020203]
-; this should be 1.0 -> we get an approximation.
 (div-interval a b)
 ; [0.9705882352941176 1.030612244897959]
+(div-interval one one)
+; [1.0 1.0]
