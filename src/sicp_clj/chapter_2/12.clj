@@ -10,8 +10,8 @@
 (defn make-center-percent
   "Creates an interval given a center and a percentage tolerance > 0.0 < 1.0"
   [c p]
-  (make-interval (- c (math/abs (* c p)))
-                 (+ c (math/abs (* c p)))))
+  (make-interval (- c (math/abs (* c (/ p 100))))
+                 (+ c (math/abs (* c (/ p 100))))))
 
 (defn center
   "Gets the originally provided center based on absolute interval"
@@ -29,7 +29,7 @@
   (let [w (width i) c (center i)]
     (math/abs (/ w c))))
 
-(def x (make-center-percent 5 0.1))
-(def y (make-center-percent -5 0.1))
+(def x (make-center-percent 5 10))
+(def y (make-center-percent -5 10))
 (percent x)
 (percent y)
