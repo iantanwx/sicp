@@ -15,14 +15,15 @@
   [new-row col positions]
   (cons (make-position new-row col) positions))
 
-(defn safe?  [col positions]
-  (let [[[proposed-queen] queens] (split-with #(= (position-col %1) col) positions)]
+(defn safe?
+  [_ positions]
+  (let [[proposed-queen & other-queens] positions]
     (every? (fn [pos]
               (let [r (position-row pos) c (position-col pos)]
                 (and (not (= r (position-row proposed-queen)))
                      (not (= (math/abs (- (position-row proposed-queen) r))
                              (- (position-col proposed-queen) c))))))
-            queens)))
+            other-queens)))
 
 (defn n-queens
   [board-size]
