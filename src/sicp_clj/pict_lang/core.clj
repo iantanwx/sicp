@@ -79,11 +79,11 @@
           (when (< y h)
             (loop [x 0 pixel (int-array (repeat 4 0))]
               (when (< x w)
-                (let [pixel (.getPixel src x y pixel)
+                (let [p (.getPixel src x y pixel)
                       t (frame->transformation frame)
                       v (make-vect (/ x w) (/ (- h y) h))]
-                  (draw-pixel dest pixel v t)
-                  (recur (inc x) pixel))))
+                  (draw-pixel dest p v t)
+                  (recur (inc x) p))))
             (recur (inc y))))
         (BufferedImage. (.getColorModel image) dest false nil)))))
 
