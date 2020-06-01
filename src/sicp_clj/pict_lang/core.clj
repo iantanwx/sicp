@@ -53,7 +53,7 @@
        int))
 
 (defn draw-pixel
-  "Draws a pixel to a Raster after applying the supplied transformation"
+  "Draws a pixel to a Raster after applying the supplied affine transformation"
   [^Raster raster pixel vector transformation]
   (let [[xx xy yx yy x0 y0] transformation
         vector-x (+ (* xx (x-vect vector))
@@ -63,7 +63,7 @@
                     (* yy (y-vect vector))
                     y0)
         x (* vector-x (.getWidth raster))
-        y (- (* (- 1 vector-y) (.getHeight raster)) 1)]
+        y (* (- 1 vector-y) (.getHeight raster))]
     (.setPixel raster (floor x) (floor y) pixel)))
 
 (defn load-painter
@@ -81,7 +81,7 @@
               (when (< x w)
                 (let [pixel (.getPixel src x y pixel)
                       t (frame->transformation frame)
-                      v (make-vect (/ x w) (/ (- h y 1) h))]
+                      v (make-vect (/ x w) (/ (- h y) h))]
                   (draw-pixel dest pixel v t)
                   (recur (inc x) pixel))))
             (recur (inc y))))
