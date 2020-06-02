@@ -20,11 +20,11 @@
 
 (defn make-frame
   "Creates a frame for a painter to draw a painting into"
-  [origin x-axis y-axis]
-  [origin x-axis y-axis])
+  [origin edge1 edge2]
+  [origin edge1 edge2])
 (defn origin-frame [[origin _ _]] origin)
-(defn x-axis-frame [[_ x-axis _]] x-axis)
-(defn y-axis-frame [[_ _ y-axis]] y-axis)
+(defn edge1-frame [[_ edge1 _]] edge1)
+(defn edge2-frame [[_ _ edge2]] edge2)
 
 (defn trans
   "Affine transformations are represented by
@@ -35,6 +35,38 @@
    Think of an affine transformation as a linear transformation followed by a translation."
   [xx xy yx yy x0 y0]
   [xx xy yx yy x0 y0])
+
+(defn add-vect
+  "Vector addition"
+  [v1 v2]
+  (let [[x1 y1] v1
+        [x2 y2] v2]
+    [(+ x1 x2) (+ y1 y2)]))
+
+(defn sub-vect
+  "Vector subtraction"
+  [v1 v2]
+  (let [[x1 y1] v1
+        [x2 y2] v2]
+    [(- x1 x2) (- y1 y2)]))
+
+(defn scale-vect
+  "scalar * vector"
+  [s v]
+  (let [[x y] v]
+    [(* s x) (* s y)]))
+
+(defn frame-coord-map
+  "Given a frame in coordinate system S, returns a procedure that maps a vector (x,y)
+   to a vector in S."
+  [frame]
+  (fn [v]
+    (add-vect (origin-frame frame)
+              (add-vect
+               (scale-vect (x-vect v)
+                           (edge1-frame frame))
+               (scale-vect (y-vect v)
+                           (edge2-frame frame))))))
 
 (defn frame->transformation
   [frame]
@@ -90,8 +122,45 @@
 (defn paint
   [painter]
   (Frame/createImageFrame "Quickview"
-                          (painter (make-frame (make-vect 0 0)
-                                               (make-vect 1 0)
-                                               (make-vect 0 1)))))
+                          (painter (make-frame (make-vect 0.0 0.0)
+                                               (make-vect 1.0 0.0)
+                                               (make-vect 0.0 1.0)))))
 
-(paint (load-painter "resources/will.gif"))
+;;; Higher-order painters
+;;; Only contains implementations for
+;;; * beside
+;;; * below
+;;; * flip-vert
+;;; * up-split
+;;; * right-split
+(defn transform-painter
+  "Transforms a painter according to a given origin and edges.
+   Allows for composition of painters + transformations."
+  [painter o e1 e2]
+  (fn [frame]
+    (let [m (frame-coord-map frame)
+          new-origin (m o)]
+      (painter (make-frame new-origin
+                           (sub-vect (m e1) new-origin)
+                           (sub-vect (m e2) new-origin))))))
+
+(defn beside
+  [painter1 painter2]
+  (let [split-point (make-vect 0.5 0.0)
+        paint-left (transform-painter painter1
+                                      (make-vect 0.0 0.0)
+                                      split-point
+                                      (make-vect 0.0 1.0))
+        paint-right (transform-painter painter2
+                                       split-point
+                                       (make-vect 1.0 0.0)
+                                       (make-vect 0.5 1.0))]
+    (fn [frame]
+      (paint-left frame)
+      (paint-right frame))))
+
+;;; Predefined painters
+(def will (load-painter "resources/will.gif"))
+
+; (paint will)
+(paint (beside will will))
