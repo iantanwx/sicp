@@ -27,16 +27,6 @@
 (defn edge1-frame [[_ edge1 _]] edge1)
 (defn edge2-frame [[_ _ edge2]] edge2)
 
-(defn trans
-  "Affine transformations are represented by
-   (struct trans (xx xy yx yy x0 y0) ...))
-   The point (x,y) is transformed to:
-     xnew = xx*x + xy*y + x0
-     ynew = yx*x + yy*y + y0
-   Think of an affine transformation as a linear transformation followed by a translation."
-  [xx xy yx yy x0 y0]
-  [xx xy yx yy x0 y0])
-
 (defn add-vect
   "Vector addition"
   [v1 v2]
@@ -68,6 +58,16 @@
                            (edge1-frame frame))
                (scale-vect (y-vect v)
                            (edge2-frame frame))))))
+
+(defn trans
+  "Affine transformations are represented by
+   (struct trans (xx xy yx yy x0 y0) ...))
+   The point (x,y) is transformed to:
+     xnew = xx*x + xy*y + x0
+     ynew = yx*x + yy*y + y0
+   Think of an affine transformation as a linear transformation followed by a translation."
+  [xx xy yx yy x0 y0]
+  [xx xy yx yy x0 y0])
 
 (defn frame->transformation
   [frame]
@@ -109,13 +109,11 @@
       (Frame/createImageFrame "Quickview" current-bm))))
 
 ;;; Higher-order painters
-;;; Only contains implementations for
 ;;; * beside
 ;;; * below
 ;;; * flip-vert
 ;;; * up-split
 ;;; * right-split
-
 (defn transform-painter
   "Transforms a painter according to a given origin and edges.
    Allows for composition of painters + transformations."
@@ -164,7 +162,12 @@
                      (make-vect 1.0 1.0)
                      (make-vect 0.0 0.0)))
 
+(defn right-split
+  [painter n]
+  (if (= n 0)
+    painter
+    (let [smaller (right-split painter (dec n))]
+      (beside painter (below smaller smaller)))))
+
 ;;; Predefined painters
 (def will (load-painter "resources/will.gif"))
-
-(paint (below will (flip-vert will)))
