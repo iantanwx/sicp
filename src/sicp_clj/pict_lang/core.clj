@@ -13,35 +13,35 @@
            javax.imageio.ImageIO
            sicp_clj.Frame))
 
-(defn make-vect [x y]
+(defn- make-vect [x y]
   "Creates a two-coordinate vector"
   [x y])
-(defn x-vect [[x _]] x)
-(defn y-vect [[_ y]] y)
+(defn- x-vect [[x _]] x)
+(defn- y-vect [[_ y]] y)
 
-(defn make-frame
+(defn- make-frame
   "Creates a frame for a painter to draw a painting into"
   [origin edge1 edge2]
   [origin edge1 edge2])
-(defn origin-frame [[origin _ _]] origin)
-(defn edge1-frame [[_ edge1 _]] edge1)
-(defn edge2-frame [[_ _ edge2]] edge2)
+(defn- origin-frame [[origin _ _]] origin)
+(defn- edge1-frame [[_ edge1 _]] edge1)
+(defn- edge2-frame [[_ _ edge2]] edge2)
 
-(defn add-vect
+(defn- add-vect
   "Vector addition"
   [v1 v2]
   (let [[x1 y1] v1
         [x2 y2] v2]
     [(+ x1 x2) (+ y1 y2)]))
 
-(defn sub-vect
+(defn- sub-vect
   "Vector subtraction"
   [v1 v2]
   (let [[x1 y1] v1
         [x2 y2] v2]
     [(- x1 x2) (- y1 y2)]))
 
-(defn scale-vect
+(defn- scale-vect
   "scalar * vector"
   [s v]
   (let [[x y] v]
@@ -59,7 +59,7 @@
                (scale-vect (y-vect v)
                            (edge2-frame frame))))))
 
-(defn trans
+(defn- trans
   "Affine transformations are represented by
    (struct trans (xx xy yx yy x0 y0) ...))
    The point (x,y) is transformed to:
@@ -69,12 +69,12 @@
   [xx xy yx yy x0 y0]
   [xx xy yx yy x0 y0])
 
-(defn frame->transformation
+(defn- frame->transformation
   [frame]
   (let [[[ox oy] [e1x e1y] [e2x e2y]] frame]
     (trans e1x e2x e1y e2y ox oy)))
 
-(defn frame->affine-transform
+(defn- frame->affine-transform
   [frame w h]
   (let [[e1x e2x e1y e2y ox oy] (frame->transformation frame)]
     (AffineTransform. (float-array [e1x e1y e2x e2y (* w ox) (* h oy)]))))
@@ -82,12 +82,12 @@
 (def ^:dynamic current-bm)
 (def ^:dynamic current-dc)
 
-(defn ^BufferedImage load-image
+(defn- ^BufferedImage load-image
   "Loads an image from the file system as a BufferedImage"
   [path]
   (ImageIO/read (as-file path)))
 
-(defn load-painter
+(defn- load-painter
   "Creates a painter from a path to an image"
   [path]
   (let [image (load-image path)
