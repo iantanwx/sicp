@@ -5,8 +5,7 @@
 ;;; - https://github.com/IvanIvanov/JavaScript-SICP-Picture-Language
 ;;; Needless to say, this code is _not_ production ready.
 (ns sicp-clj.pict-lang.core
-  (:require [clojure.java.io :refer [as-file file]]
-            [clojure.math.numeric-tower :as math])
+  (:require [clojure.java.io :refer [as-file file]])
   (:import java.awt.image.BufferedImage
            java.awt.image.Raster
            java.awt.geom.AffineTransform
