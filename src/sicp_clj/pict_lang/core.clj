@@ -69,8 +69,6 @@
                (scale-vect (y-vect v)
                            (edge2-frame frame))))))
 
-; 1.0 0.0 0.0 0.0 1.0 0.0 -> [[1.0, 0.0, 1.0], [0.0, 0.0, 0.0]]
-; form 0x1e9f4e49 AffineTransform[[1.0, 0.0, 1.0], [0.0, 0.0, 0.0]]]
 (defn frame->transformation
   [frame]
   (let [[[ox oy] [e1x e1y] [e2x e2y]] frame]
@@ -144,8 +142,29 @@
       (paint-left frame)
       (paint-right frame))))
 
+(defn below
+  [painter1 painter2]
+  (let [split-point (make-vect 0.0 0.5)
+        paint-top (transform-painter painter1
+                                     split-point
+                                     (make-vect 1.0 0.5)
+                                     (make-vect 0.0 1.0))
+        paint-bottom (transform-painter painter2
+                                        (make-vect 0.0 0.0)
+                                        (make-vect 1.0 0.0)
+                                        split-point)]
+    (fn [frame]
+      (paint-top frame)
+      (paint-bottom frame))))
+
+(defn flip-vert
+  [painter]
+  (transform-painter painter
+                     (make-vect 0.0 1.0)
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 0.0)))
+
 ;;; Predefined painters
 (def will (load-painter "resources/will.gif"))
 
-(paint (beside will will))
-; (paint will)
+(paint (below will (flip-vert will)))
