@@ -105,7 +105,6 @@
   (let [bm (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
         dc (.createGraphics bm)]
     (binding [current-bm bm current-dc dc]
-      (.fill3DRect dc 0 0 200 200 false)
       (painter (make-frame (make-vect 0.0 0.0)
                            (make-vect 1.0 0.0)
                            (make-vect 0.0 1.0)))
