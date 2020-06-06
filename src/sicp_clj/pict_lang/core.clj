@@ -9,6 +9,7 @@
             [clojure.math.numeric-tower :as math])
   (:import java.awt.image.BufferedImage
            java.awt.image.Raster
+           java.awt.geom.AffineTransform
            javax.imageio.ImageIO
            sicp_clj.Frame))
 
@@ -68,63 +69,47 @@
                (scale-vect (y-vect v)
                            (edge2-frame frame))))))
 
+; 1.0 0.0 0.0 0.0 1.0 0.0 -> [[1.0, 0.0, 1.0], [0.0, 0.0, 0.0]]
+; form 0x1e9f4e49 AffineTransform[[1.0, 0.0, 1.0], [0.0, 0.0, 0.0]]]
 (defn frame->transformation
   [frame]
   (let [[[ox oy] [e1x e1y] [e2x e2y]] frame]
     (trans e1x e2x e1y e2y ox oy)))
+
+(defn frame->affine-transform
+  [frame w h]
+  (let [[e1x e2x e1y e2y ox oy] (frame->transformation frame)]
+    (AffineTransform. (float-array [e1x e1y e2x e2y (* w ox) (* h oy)]))))
+
+(def ^:dynamic current-bm)
+(def ^:dynamic current-dc)
 
 (defn ^BufferedImage load-image
   "Loads an image from the file system as a BufferedImage"
   [path]
   (ImageIO/read (as-file path)))
 
-(defn floor
-  [n]
-  (->> n
-       math/floor
-       int))
-
-(defn draw-pixel
-  "Draws a pixel to a Raster after applying the supplied affine transformation"
-  [^Raster raster pixel vector transformation]
-  (let [[xx xy yx yy x0 y0] transformation
-        vector-x (+ (* xx (x-vect vector))
-                    (* xy (y-vect vector))
-                    x0)
-        vector-y (+ (* yx (x-vect vector))
-                    (* yy (y-vect vector))
-                    y0)
-        x (* vector-x (.getWidth raster))
-        y (* (- 1 vector-y) (.getHeight raster))]
-    (.setPixel raster (floor x) (floor y) pixel)))
-
 (defn load-painter
   "Creates a painter from a path to an image"
   [path]
-  (let [image (load-image path)]
+  (let [image (load-image path)
+        w (.getWidth image)
+        h (.getHeight image)]
     (fn [frame]
-      (let [src (.getRaster image)
-            dest (.createCompatibleWritableRaster src)
-            w (.getWidth src)
-            h (.getHeight src)]
-        (loop [y 0]
-          (when (< y h)
-            (loop [x 0 pixel (int-array (repeat 4 0))]
-              (when (< x w)
-                (let [p (.getPixel src x y pixel)
-                      t (frame->transformation frame)
-                      v (make-vect (/ x w) (/ (- h y) h))]
-                  (draw-pixel dest p v t)
-                  (recur (inc x) p))))
-            (recur (inc y))))
-        (BufferedImage. (.getColorModel image) dest false nil)))))
+      (let [transform (frame->affine-transform frame w h)]
+        (doto current-dc
+          (.drawImage image transform nil))))))
 
 (defn paint
-  [painter]
-  (Frame/createImageFrame "Quickview"
-                          (painter (make-frame (make-vect 0.0 0.0)
-                                               (make-vect 1.0 0.0)
-                                               (make-vect 0.0 1.0)))))
+  [painter & {:keys [width height] :or {width 200 height 200}}]
+  (let [bm (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
+        dc (.createGraphics bm)]
+    (binding [current-bm bm current-dc dc]
+      (.fill3DRect dc 0 0 200 200 false)
+      (painter (make-frame (make-vect 0.0 0.0)
+                           (make-vect 1.0 0.0)
+                           (make-vect 0.0 1.0)))
+      (Frame/createImageFrame "Quickview" current-bm))))
 
 ;;; Higher-order painters
 ;;; Only contains implementations for
@@ -133,6 +118,7 @@
 ;;; * flip-vert
 ;;; * up-split
 ;;; * right-split
+
 (defn transform-painter
   "Transforms a painter according to a given origin and edges.
    Allows for composition of painters + transformations."
@@ -162,5 +148,5 @@
 ;;; Predefined painters
 (def will (load-painter "resources/will.gif"))
 
-; (paint will)
 (paint (beside will will))
+; (paint will)
