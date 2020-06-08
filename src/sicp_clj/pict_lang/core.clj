@@ -18,13 +18,13 @@
 (defn xcor-vect [[x _]] x)
 (defn ycor-vect [[_ y]] y)
 
-(defn- make-frame
+(defn make-frame
   "Creates a frame for a painter to draw a painting into"
   [origin edge1 edge2]
   [origin edge1 edge2])
-(defn- origin-frame [[origin _ _]] origin)
-(defn- edge1-frame [[_ edge1 _]] edge1)
-(defn- edge2-frame [[_ _ edge2]] edge2)
+(defn origin-frame [[origin _ _]] origin)
+(defn edge1-frame [[_ edge1 _]] edge1)
+(defn edge2-frame [[_ _ edge2]] edge2)
 
 (defn- add-vect
   "Vector addition"
