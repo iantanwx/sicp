@@ -12,11 +12,11 @@
            javax.imageio.ImageIO
            sicp_clj.Frame))
 
-(defn- make-vect [x y]
+(defn make-vect [x y]
   "Creates a two-coordinate vector"
   [x y])
-(defn- x-vect [[x _]] x)
-(defn- y-vect [[_ y]] y)
+(defn xcor-vect [[x _]] x)
+(defn ycor-vect [[_ y]] y)
 
 (defn- make-frame
   "Creates a frame for a painter to draw a painting into"
@@ -53,9 +53,9 @@
   (fn [v]
     (add-vect (origin-frame frame)
               (add-vect
-               (scale-vect (x-vect v)
+               (scale-vect (xcor-vect v)
                            (edge1-frame frame))
-               (scale-vect (y-vect v)
+               (scale-vect (ycor-vect v)
                            (edge2-frame frame))))))
 
 (defn- trans
