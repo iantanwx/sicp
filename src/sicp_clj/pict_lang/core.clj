@@ -9,6 +9,7 @@
   (:import java.awt.image.BufferedImage
            java.awt.image.Raster
            java.awt.geom.AffineTransform
+           jave.awt.geom.Line2D$Float
            javax.imageio.ImageIO
            sicp_clj.Frame))
 
@@ -58,6 +59,18 @@
                (scale-vect (ycor-vect v)
                            (edge2-frame frame))))))
 
+(defn make-segment
+  [start end]
+  [start end])
+
+(defn start-segment
+  [[start]]
+  start)
+
+(defn end-segment
+  [[_ end]]
+  end)
+
 (defn- trans
   "Affine transformations are represented by
    (struct trans (xx xy yx yy x0 y0) ...))
@@ -96,6 +109,28 @@
       (let [transform (frame->affine-transform frame w h)]
         (doto current-dc
           (.drawImage image transform nil))))))
+
+(defn draw-line
+  [start-segment end-segment]
+  (let [line (Line2D$Float. (xcor-vect start-segment)
+                            (ycor-vect start-segment)
+                            (xcor-vect end-segment)
+                            (ycor-vect end-segment))]
+    (.draw current-dc line)))
+
+(defn segment->painter
+  [segment-list]
+  (fn [frame]
+    (let [trans (AffineTransform.)
+          w (.getWidth current-bm)
+          h (.getHeight current-bm)]
+      ;;; we scale to the width and height of the current bitmap since all vectors
+      ;;; in the picture language are within the unit square, i.e. 0 <= c <= 1
+      (.scale trans w h)
+      (.transform current-dc trans)
+      (doseq [segment segment-list]
+        (draw-line ((frame-coord-map frame) (start-segment segment))
+                   ((frame-coord-map frame) (end-segment segment)))))))
 
 (defn paint
   [painter & {:keys [width height] :or {width 200 height 200}}]
