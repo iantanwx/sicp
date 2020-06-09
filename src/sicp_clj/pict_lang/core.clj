@@ -9,8 +9,9 @@
   (:import java.awt.image.BufferedImage
            java.awt.image.Raster
            java.awt.geom.AffineTransform
-           jave.awt.geom.Line2D$Float
+           java.awt.geom.Line2D$Float
            javax.imageio.ImageIO
+           java.awt.Color
            sicp_clj.Frame))
 
 (defn make-vect [x y]
@@ -112,10 +113,13 @@
 
 (defn draw-line
   [start-segment end-segment]
+  (println start-segment)
+  (println end-segment)
   (let [line (Line2D$Float. (xcor-vect start-segment)
                             (ycor-vect start-segment)
                             (xcor-vect end-segment)
                             (ycor-vect end-segment))]
+    (println line)
     (.draw current-dc line)))
 
 (defn segment->painter
@@ -127,7 +131,8 @@
       ;;; we scale to the width and height of the current bitmap since all vectors
       ;;; in the picture language are within the unit square, i.e. 0 <= c <= 1
       (.scale trans w h)
-      (.transform current-dc trans)
+      ; (.transform current-dc trans)
+      (.setColor current-dc Color/black)
       (doseq [segment segment-list]
         (draw-line ((frame-coord-map frame) (start-segment segment))
                    ((frame-coord-map frame) (end-segment segment)))))))
