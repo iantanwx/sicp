@@ -10,4 +10,4 @@
                                (make-segment (make-vect 0.0 1.0)
                                              (make-vect 1.0 0.0))]))
 
-(paint draw-x :width 200 :height 200 :frame frame)
+(paint draw-x)

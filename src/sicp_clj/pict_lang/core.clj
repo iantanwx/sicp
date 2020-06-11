@@ -10,6 +10,7 @@
            java.awt.image.Raster
            java.awt.geom.AffineTransform
            java.awt.geom.Line2D$Float
+           java.awt.geom.Point2D$Float
            javax.imageio.ImageIO
            java.awt.Color
            sicp_clj.Frame))
@@ -88,9 +89,9 @@
     (trans e1x e2x e1y e2y ox oy)))
 
 (defn- frame->affine-transform
-  [frame w h]
+  [frame]
   (let [[e1x e2x e1y e2y ox oy] (frame->transformation frame)]
-    (AffineTransform. (float-array [e1x e1y e2x e2y (* w ox) (* h oy)]))))
+    (AffineTransform. (float-array [e1x e1y e2x e2y ox oy]))))
 
 (def ^:private identity-frame
   (make-frame (make-vect 0.0 0.0)
@@ -112,27 +113,40 @@
         w (.getWidth image)
         h (.getHeight image)]
     (fn [frame]
-      (let [transform (frame->affine-transform frame w h)]
+      (let [old-transform (.getTransform current-dc)
+            new-transform (.clone old-transform)
+            initial-transform (AffineTransform. (float-array [w 0 0 h 0 0]))]
+        (doto new-transform
+          (.concatenate initial-transform)
+          (.concatenate (frame->affine-transform frame)))
         (doto current-dc
-          (.drawImage image transform nil))))))
-
-(defn draw-line
-  [start-segment end-segment]
-  (println start-segment)
-  (println end-segment)
-  (let [line (Line2D$Float. (xcor-vect start-segment)
-                            (ycor-vect start-segment)
-                            (xcor-vect end-segment)
-                            (ycor-vect end-segment))]
-    (.draw current-dc line)))
+          (.setTransform new-transform)
+          (.drawImage image 0 0 1 1 nil)
+          (.setTransform old-transform))))))
 
 (defn segment->painter
   [segment-list]
   (fn [frame]
     (.setColor current-dc Color/black)
-    (doseq [segment segment-list]
-      (draw-line ((frame-coord-map frame) (start-segment segment))
-                 ((frame-coord-map frame) (end-segment segment))))))
+    (let [trans (AffineTransform.)
+          w (.getWidth current-bm)
+          h (.getHeight current-bm)]
+      (doto trans
+        (.concatenate (AffineTransform. (float-array [w 0 0 h 0 0])))
+        (.concatenate (frame->affine-transform frame)))
+      (doseq [segment segment-list]
+        (let [start (start-segment segment)
+              end (end-segment segment)
+              p1s (Point2D$Float. (xcor-vect start)
+                                  (ycor-vect start))
+              p2s (Point2D$Float. (xcor-vect end)
+                                  (ycor-vect end))
+              p1d (Point2D$Float.)
+              p2d (Point2D$Float.)]
+          (doto trans
+            (.transform p1s p1d)
+            (.transform p2s p2d))
+          (.draw current-dc (Line2D$Float. p1d p2d)))))))
 
 (defn paint
   [painter & {:keys [width height frame] :or {width 200 height 200 frame identity-frame}}]
