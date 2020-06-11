@@ -92,6 +92,11 @@
   (let [[e1x e2x e1y e2y ox oy] (frame->transformation frame)]
     (AffineTransform. (float-array [e1x e1y e2x e2y (* w ox) (* h oy)]))))
 
+(def ^:private identity-frame
+  (make-frame (make-vect 0.0 0.0)
+              (make-vect 1.0 0.0)
+              (make-vect 0.0 1.0)))
+
 (def ^:dynamic current-bm)
 (def ^:dynamic current-dc)
 
@@ -119,32 +124,22 @@
                             (ycor-vect start-segment)
                             (xcor-vect end-segment)
                             (ycor-vect end-segment))]
-    (println line)
     (.draw current-dc line)))
 
 (defn segment->painter
   [segment-list]
   (fn [frame]
-    (let [trans (AffineTransform.)
-          w (.getWidth current-bm)
-          h (.getHeight current-bm)]
-      ;;; we scale to the width and height of the current bitmap since all vectors
-      ;;; in the picture language are within the unit square, i.e. 0 <= c <= 1
-      (.scale trans w h)
-      ; (.transform current-dc trans)
-      (.setColor current-dc Color/black)
-      (doseq [segment segment-list]
-        (draw-line ((frame-coord-map frame) (start-segment segment))
-                   ((frame-coord-map frame) (end-segment segment)))))))
+    (.setColor current-dc Color/black)
+    (doseq [segment segment-list]
+      (draw-line ((frame-coord-map frame) (start-segment segment))
+                 ((frame-coord-map frame) (end-segment segment))))))
 
 (defn paint
-  [painter & {:keys [width height] :or {width 200 height 200}}]
+  [painter & {:keys [width height frame] :or {width 200 height 200 frame identity-frame}}]
   (let [bm (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
         dc (.createGraphics bm)]
     (binding [current-bm bm current-dc dc]
-      (painter (make-frame (make-vect 0.0 0.0)
-                           (make-vect 1.0 0.0)
-                           (make-vect 0.0 1.0)))
+      (painter frame)
       (Frame/createImageFrame "Quickview" current-bm))))
 
 ;;; Higher-order painters
