@@ -149,7 +149,8 @@
           (.draw current-dc (Line2D$Float. p1d p2d)))))))
 
 (defn paint
-  [painter & {:keys [width height frame] :or {width 200 height 200 frame identity-frame}}]
+  [painter & {:keys [width height frame]
+              :or {width 200 height 200 frame identity-frame}}]
   (let [bm (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
         dc (.createGraphics bm)]
     (binding [current-bm bm current-dc dc]
