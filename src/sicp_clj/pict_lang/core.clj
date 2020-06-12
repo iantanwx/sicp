@@ -149,12 +149,15 @@
           (.draw current-dc (Line2D$Float. p1d p2d)))))))
 
 (defn paint
-  [painter & {:keys [width height frame]
-              :or {width 200 height 200 frame identity-frame}}]
+  [painter & {:keys [width height]
+              :or {width 200 height 200}}]
   (let [bm (BufferedImage. width height BufferedImage/TYPE_INT_ARGB)
         dc (.createGraphics bm)]
+    ;;; scale the entire coordinate space by 0.99.
+    ;;; otherwise, top and right borders of the unit square are hidden.
+    (.scale dc 0.99 0.99)
     (binding [current-bm bm current-dc dc]
-      (painter frame)
+      (painter identity-frame)
       (Frame/createImageFrame "Quickview" current-bm))))
 
 ;;; Higher-order painters
