@@ -127,7 +127,6 @@
 (defn segment->painter
   [segment-list]
   (fn [frame]
-    (.setColor current-dc Color/black)
     (let [trans (AffineTransform.)
           w (.getWidth current-bm)
           h (.getHeight current-bm)]
@@ -155,7 +154,11 @@
         dc (.createGraphics bm)]
     ;;; scale the entire coordinate space by 0.99.
     ;;; otherwise, top and right borders of the unit square are hidden.
-    (.scale dc 0.99 0.99)
+    (doto dc
+      (.setColor Color/white)
+      (.fillRect 0 0 width height)
+      (.setColor Color/black)
+      (.scale 0.99 0.99))
     (binding [current-bm bm current-dc dc]
       (painter identity-frame)
       (Frame/createImageFrame "Quickview" current-bm))))
