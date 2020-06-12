@@ -7,7 +7,6 @@
 (ns sicp-clj.pict-lang.core
   (:require [clojure.java.io :refer [as-file file]])
   (:import java.awt.image.BufferedImage
-           java.awt.image.Raster
            java.awt.geom.AffineTransform
            java.awt.geom.Line2D$Float
            java.awt.geom.Point2D$Float
