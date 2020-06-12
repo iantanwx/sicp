@@ -109,27 +109,24 @@
 (defn- load-painter
   "Creates a painter from a path to an image"
   [path]
-  (let [image (load-image path)
-        w (.getWidth image)
-        h (.getHeight image)]
-    (fn [frame]
-      (let [old-transform (.getTransform current-dc)
-            new-transform (.clone old-transform)
-            initial-transform (AffineTransform. (float-array [w 0 0 h 0 0]))]
-        (doto new-transform
-          (.concatenate initial-transform)
-          (.concatenate (frame->affine-transform frame)))
-        (doto current-dc
-          (.setTransform new-transform)
-          (.drawImage image 0 0 1 1 nil)
-          (.setTransform old-transform))))))
+  (fn [frame]
+    (let [image (load-image path)
+          w (.getWidth image)
+          h (.getHeight image)
+          trans (AffineTransform.)]
+      (doto trans
+        (.concatenate (AffineTransform. (float-array [w 0 0 h 0 0])))
+        (.concatenate (frame->affine-transform frame)))
+      (doto current-dc
+        (.setTransform trans)
+        (.drawImage image 0 0 1 1 nil)))))
 
 (defn segment->painter
   [segment-list]
   (fn [frame]
-    (let [trans (AffineTransform.)
-          w (.getWidth current-bm)
-          h (.getHeight current-bm)]
+    (let [w (.getWidth current-bm)
+          h (.getHeight current-bm)
+          trans (AffineTransform.)]
       (doto trans
         (.concatenate (AffineTransform. (float-array [w 0 0 h 0 0])))
         (.concatenate (frame->affine-transform frame)))
