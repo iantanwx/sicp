@@ -169,9 +169,12 @@
       (Frame/createImageFrame "Quickview" current-bm))))
 
 ;;; Higher-order painters
+;;; * transform-painter
 ;;; * beside
 ;;; * below
 ;;; * flip-vert
+;;; * rotate-90
+;;; * squish-inwards
 ;;; * right-split
 (defn transform-painter
   "Transforms a painter according to a given origin and edges.
@@ -221,12 +224,25 @@
                      (make-vect 1.0 1.0)
                      (make-vect 0.0 0.0)))
 
+(defn flip-horiz
+  [painter]
+  (transform-painter painter
+                     (make-vect 1.0 0.0)
+                     (make-vect 0.0 0.0)
+                     (make-vect 1.0 1.0)))
 (defn rotate-90
   [painter]
   (transform-painter painter
                      (make-vect 1.0 0.0)
                      (make-vect 1.0 1.0)
                      (make-vect 0.0 0.0)))
+
+(defn rotate-180
+  [painter]
+  (transform-painter painter
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 1.0)
+                     (make-vect 1.0 0.0)))
 
 (defn squish-inwards
   [painter]
@@ -242,5 +258,40 @@
     (let [smaller (right-split painter (dec n))]
       (beside painter (below smaller smaller)))))
 
+(defn up-split
+  [painter n]
+  (if (= n 0)
+    painter
+    (let [smaller (up-split painter (dec n))]
+      (below painter (beside smaller smaller)))))
+
+(defn corner-split
+  [painter n]
+  (if (= n 0)
+    painter
+    (let [up (up-split painter (dec n))
+          right (right-split painter (dec n))]
+      (let [top-left (beside up up)
+            bottom-right (below right right)
+            corner (corner-split painter (dec n))]
+        (beside (below painter top-left)
+                (below bottom-right corner))))))
+
+(defn square-of-four
+  [tl tr bl br]
+  (fn [painter]
+    (let [top (beside (tl painter) (tr painter))
+          bottom (beside (bl painter) (br painter))]
+      (below bottom top))))
+
+(defn square-limit
+  [painter n]
+  (let [combine4 (square-of-four flip-horiz identity
+                                 rotate-180 flip-vert)]
+    (combine4 (corner-split painter n))))
+
+
 ;;; Predefined painters
+
+
 (def will (load-painter "resources/will.gif"))

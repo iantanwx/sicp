@@ -1,5 +1,5 @@
 (ns sicp-clj.chapter-2.44
-  (:require [sicp-clj.pict-lang.core :refer :all]))
+  (:require [sicp-clj.pict-lang.core :refer [below beside right-split paint will]]))
 
 (defn up-split
   [painter n]

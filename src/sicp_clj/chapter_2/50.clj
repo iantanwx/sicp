@@ -1,5 +1,5 @@
 (ns sicp-clj.chapter-2.50
-  (:require [sicp-clj.pict-lang.core :refer :all]))
+  (:require [sicp-clj.pict-lang.core :refer [make-vect transform-painter beside paint will]]))
 
 (defn flip-horiz
   [painter]
