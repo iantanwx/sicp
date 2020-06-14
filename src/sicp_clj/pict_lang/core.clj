@@ -6,12 +6,12 @@
 ;;; Needless to say, this code is _not_ production ready.
 (ns sicp-clj.pict-lang.core
   (:require [clojure.java.io :refer [as-file file]])
-  (:import java.awt.image.BufferedImage
+  (:import java.awt.Color
+           java.awt.image.BufferedImage
            java.awt.geom.AffineTransform
            java.awt.geom.Line2D$Float
            java.awt.geom.Point2D$Float
            javax.imageio.ImageIO
-           java.awt.Color
            sicp_clj.Frame))
 
 (defn make-vect [x y]
@@ -72,6 +72,15 @@
   [[_ end]]
   end)
 
+(defn connect
+  [& vects]
+  (loop [v (first vects)
+         vs (rest vects)
+         segments []]
+    (if (empty? vs)
+      segments
+      (recur (first vs) (rest vs) (cons (make-segment v (first vs)) segments)))))
+
 (defn- trans
   "Affine transformations are represented by
    (struct trans (xx xy yx yy x0 y0) ...))
@@ -127,7 +136,7 @@
           h (.getHeight current-bm)
           trans (AffineTransform.)]
       (doto trans
-        (.concatenate (AffineTransform. (float-array [w 0 0 h 0 0])))
+        (.concatenate (AffineTransform. (float-array [w 0 0 (* -1 h) 0 h])))
         (.concatenate (frame->affine-transform frame)))
       (doseq [segment segment-list]
         (let [start (start-segment segment)
