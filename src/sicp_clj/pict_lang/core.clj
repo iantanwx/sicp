@@ -172,7 +172,6 @@
 ;;; * beside
 ;;; * below
 ;;; * flip-vert
-;;; * up-split
 ;;; * right-split
 (defn transform-painter
   "Transforms a painter according to a given origin and edges.
@@ -221,6 +220,20 @@
                      (make-vect 0.0 1.0)
                      (make-vect 1.0 1.0)
                      (make-vect 0.0 0.0)))
+
+(defn rotate-90
+  [painter]
+  (transform-painter painter
+                     (make-vect 1.0 0.0)
+                     (make-vect 1.0 1.0)
+                     (make-vect 0.0 0.0)))
+
+(defn squish-inwards
+  [painter]
+  (transform-painter painter
+                     (make-vect 0.0 0.0)
+                     (make-vect 0.65 0.35)
+                     (make-vect 0.35 0.65)))
 
 (defn right-split
   [painter n]
