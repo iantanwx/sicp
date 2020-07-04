@@ -17,7 +17,7 @@
 
 (defn sum?
   [x]
-  (and (list? x) (= (first x) '+)))
+  (and (seq? x) (= (first x) '+)))
 
 (defn addend
   [s]
@@ -37,7 +37,7 @@
 
 (defn product?
   [x]
-  (and (list? x) (= (first x) '*)))
+  (and (seq? x) (= (first x) '*)))
 
 (defn multiplier
   [p]
@@ -58,7 +58,7 @@
 
 (defn exponentiation?
   [x]
-  (and (list? x) (= (first x) '**)))
+  (and (seq? x) (= (first x) '**)))
 
 (defn base
   [x]
