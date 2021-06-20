@@ -68,7 +68,7 @@
   [x]
   (nth x 2))
 
-(defn make-expontentiation
+(defn make-exponentiation
   [b e]
   (cond (=number? e 0) 1
         (=number? e 1) b
@@ -89,9 +89,10 @@
                                    (multiplicand expr)))
     (exponentiation? expr) (make-product
                             (make-product (exponent expr)
-                                          (make-expontentiation (base expr) (- (exponent expr) 1)))
+                                          (make-exponentiation (base expr) (- (exponent expr) 1)))
                             (deriv (base expr) var))
     :else (throw (AssertionError. (format "Unknown expression: %s" expr)))))
 
 (deriv '(+ x 3) 'x)
+(deriv '(* x 3) 'x)
 (deriv '(** x 3) 'x)

@@ -48,7 +48,7 @@
                                      (multiplicand-n expr)))
     (exponentiation? expr) (make-product-n
                             (make-product-n (exponent expr)
-                                            (make-expontentiation (base expr) (- (exponent expr) 1)))
+                                            (make-exponentiation (base expr) (- (exponent expr) 1)))
                             (deriv-n (base expr) var))
     :else (println "Unknown expr: " expr)))
 
